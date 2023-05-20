@@ -73,6 +73,12 @@ async function run() {
       const toys = await ToysCollection.find({ subcategory }).toArray();
       res.send(toys);
     });
+    
+    app.get("/fireTruck/:subcategory", async (req, res) => {
+      const subcategory = req.params.subcategory;
+      const toys = await ToysCollection.find({ subcategory }).toArray();
+      res.send(toys);
+    });
 
     app.post("/addToys", async (req, res) => {
       const toy = req.body;
