@@ -82,6 +82,22 @@ async function run() {
       res.send(sortedToys);
     });
 
+    app.get("/topRated", async (req, res) => {
+      const toys = await ToysCollection.find({
+        $and: [
+          { rating: { $gte: "4.8" } },
+          { rating: { $lte: "5" } }
+        ]
+      }).toArray();
+    
+      res.send(toys);
+    });
+
+    app.get("/latest", async(req, res)=> {
+      const toys = await ToysCollection.find().sort({createdAt: 1}).limit(5).toArray();
+      res.send(toys);
+    })
+
     app.get("/superCar/:subcategory", async (req, res) => {
       const subcategory = req.params.subcategory;
       const toys = await ToysCollection.find({ subcategory }).toArray();
@@ -102,6 +118,7 @@ async function run() {
 
     app.post("/addToys", async (req, res) => {
       const toy = req.body;
+      body.createdAt = new Date();
       console.log(toy);
       const result = await ToysCollection.insertOne(toy);
       res.send(result);
