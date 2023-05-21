@@ -28,7 +28,10 @@ async function run() {
     const ToysCollection = client.db("ToyCars").collection("allProducts");
 
     app.get("/allToys", async (req, res) => {
-      const result = await allToysCollection.find().toArray();
+      const result = await allToysCollection
+        .find()
+        .sort({ price: -1 })
+        .toArray();
       res.send(result);
     });
 
@@ -42,7 +45,10 @@ async function run() {
 
     app.get("/toys", async (req, res) => {
       const limit = parseInt(req.query.limit);
-      const result = await ToysCollection.find().limit(limit).toArray();
+      const result = await ToysCollection.find()
+        .sort({ quantity: 1 })
+        .limit(limit)
+        .toArray();
       res.send(result);
     });
 
@@ -65,16 +71,30 @@ async function run() {
       const toys = await ToysCollection.find({
         sellerEmail: req.params.email,
       }).toArray();
-      res.send(toys);
+
+      const sortedToys = toys.sort((a, b) => {
+        const priceA = parseInt(a.price, 10);
+        const priceB = parseInt(b.price, 10);
+
+        return priceA - priceB; // Sort in ascending order
+      });
+
+      res.send(sortedToys);
     });
 
-    app.get("/toys/:subcategory", async (req, res) => {
+    app.get("/superCar/:subcategory", async (req, res) => {
       const subcategory = req.params.subcategory;
       const toys = await ToysCollection.find({ subcategory }).toArray();
       res.send(toys);
     });
-    
+
     app.get("/fireTruck/:subcategory", async (req, res) => {
+      const subcategory = req.params.subcategory;
+      const toys = await ToysCollection.find({ subcategory }).toArray();
+      res.send(toys);
+    });
+
+    app.get("/policeCar/:subcategory", async (req, res) => {
       const subcategory = req.params.subcategory;
       const toys = await ToysCollection.find({ subcategory }).toArray();
       res.send(toys);
