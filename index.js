@@ -24,24 +24,9 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    const allToysCollection = client.db("ToyCars").collection("allToys");
     const ToysCollection = client.db("ToyCars").collection("allProducts");
 
-    app.get("/allToys", async (req, res) => {
-      const result = await allToysCollection
-        .find()
-        .sort({ price: -1 })
-        .toArray();
-      res.send(result);
-    });
 
-    app.get("/allToys/:id", async (req, res) => {
-      const id = req.params.id;
-      console.log(id);
-      const query = { _id: new ObjectId(id) };
-      const result = await allToysCollection.findOne(query);
-      res.send(result);
-    });
 
     app.get("/toys", async (req, res) => {
       const limit = parseInt(req.query.limit);
@@ -84,19 +69,19 @@ async function run() {
 
     app.get("/topRated", async (req, res) => {
       const toys = await ToysCollection.find({
-        $and: [
-          { rating: { $gte: "4.8" } },
-          { rating: { $lte: "5" } }
-        ]
+        $and: [{ rating: { $gte: "4.8" } }, { rating: { $lte: "5" } }],
       }).toArray();
-    
+
       res.send(toys);
     });
 
-    app.get("/latest", async(req, res)=> {
-      const toys = await ToysCollection.find().sort({createdAt: 1}).limit(5).toArray();
+    app.get("/latest", async (req, res) => {
+      const toys = await ToysCollection.find()
+        .sort({ createdAt: -1 })
+        .limit(4)
+        .toArray();
       res.send(toys);
-    })
+    });
 
     app.get("/superCar/:subcategory", async (req, res) => {
       const subcategory = req.params.subcategory;
@@ -118,7 +103,7 @@ async function run() {
 
     app.post("/addToys", async (req, res) => {
       const toy = req.body;
-      body.createdAt = new Date();
+      toy.createdAt = new Date();
       console.log(toy);
       const result = await ToysCollection.insertOne(toy);
       res.send(result);
