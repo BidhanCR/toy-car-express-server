@@ -61,7 +61,7 @@ async function run() {
         const priceA = parseInt(a.price, 10);
         const priceB = parseInt(b.price, 10);
 
-        return priceA - priceB; // Sort in ascending order
+        return priceA - priceB; 
       });
 
       res.send(sortedToys);
